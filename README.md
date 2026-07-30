@@ -204,8 +204,12 @@ Generated source data, processed CSVs, credentials, Power BI binaries, database 
 ![Cohort retention heatmap](reports/figures/06_cohort_retention_heatmap.png)
 
 ## Power BI Dashboard Preview
-
-*(Power BI ekran görüntülerinizi buraya ekleyebilirsiniz. GitHub üzerinden düzenliyorsanız, fotoğrafları doğrudan buraya sürükleyip bırakmanız yeterlidir!)*
+<img width="1682" height="778" alt="Ekran görüntüsü 2026-07-29 191506" src="https://github.com/user-attachments/assets/3131e492-f0e0-4b18-92d5-fbccb9641d47" />
+<img width="1680" height="795" alt="Ekran görüntüsü 2026-07-29 191518" src="https://github.com/user-attachments/assets/96b52297-5234-4b91-a055-1af438528246" />
+<img width="1657" height="808" alt="Ekran görüntüsü 2026-07-29 191531" src="https://github.com/user-attachments/assets/4797e9d1-7fe3-48cb-8fe6-ce4ae4b1bb8d" />
+<img width="1586" height="812" alt="Ekran görüntüsü 2026-07-29 191543" src="https://github.com/user-attachments/assets/fd5c2200-edbd-4d3e-b375-baae3ad4c786" />
+<img width="1618" height="805" alt="Ekran görüntüsü 2026-07-29 191553" src="https://github.com/user-attachments/assets/1883f794-ca44-49d1-9a7a-988db13fe1d2" />
+<img width="1636" height="796" alt="Ekran görüntüsü 2026-07-29 191604" src="https://github.com/user-attachments/assets/7c684b33-1f7c-48dc-b9a3-c29d0602cf08" />
 
 ### 4. Build the Power BI report
 
