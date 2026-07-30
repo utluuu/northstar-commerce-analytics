@@ -1,0 +1,3018 @@
+{
+  "name": "Northstar Commerce Analytics",
+  "compatibilityLevel": 1567,
+  "model": {
+    "culture": "en-US",
+    "defaultPowerBIDataSourceVersion": "powerBI_V3",
+    "sourceQueryCulture": "en-US",
+    "dataAccessOptions": {
+      "legacyRedirects": true,
+      "returnErrorValuesAsNull": true
+    },
+    "annotations": [
+      {
+        "name": "PBI_QueryOrder",
+        "value": "[\"CsvRoot\", \"fnLoadCsv\", \"DimDate\", \"DimCustomer\", \"DimProduct\", \"DimChannel\", \"DimGeography\", \"DimPromotion\", \"FactOrders\", \"FactOrderLines\", \"FactReturns\", \"FactReviews\", \"FactCampaignPerformance\", \"FactCohortRetention\", \"FactRfmSnapshot\", \"ValidationAcquisition\", \"ValidationCategory\", \"ValidationDelivery\", \"ValidationDiscount\", \"ValidationMonthly\", \"ValidationPareto\", \"ValidationProduct\", \"ValidationRegionalChannel\", \"ValidationReviewReturn\"]"
+      },
+      {
+        "name": "__PBI_TimeIntelligenceEnabled",
+        "value": "0"
+      }
+    ],
+    "expressions": [
+      {
+        "name": "CsvRoot",
+        "kind": "m",
+        "expression": "\"C:\\\\Users\\\\utluu\\\\OneDrive\\\\Masa\u00fcst\u00fc\\\\northstar-commerce-analytics\\\\northstar-commerce-analytics-v1.0.0\\\\northstar-commerce-analytics\\\\data\\\\processed\" meta [IsParameterQuery=true, Type=\"Text\", IsParameterQueryRequired=true]"
+      },
+      {
+        "name": "fnLoadCsv",
+        "kind": "m",
+        "expression": "(fileName as text, columnTypes as list) as table =>\nlet\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\\" & fileName),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, columnTypes, \"en-US\")\nin\n    TypedColumns"
+      }
+    ],
+    "tables": [
+      {
+        "name": "DimDate",
+        "columns": [
+          {
+            "name": "DateKey",
+            "dataType": "int64",
+            "sourceColumn": "DateKey",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "FullDate",
+            "dataType": "dateTime",
+            "sourceColumn": "FullDate",
+            "summarizeBy": "none",
+            "dataCategory": "PaddedDateTableDates"
+          },
+          {
+            "name": "CalendarYear",
+            "dataType": "int64",
+            "sourceColumn": "CalendarYear",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "CalendarQuarter",
+            "dataType": "string",
+            "sourceColumn": "CalendarQuarter",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "MonthNumber",
+            "dataType": "int64",
+            "sourceColumn": "MonthNumber",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "MonthName",
+            "dataType": "string",
+            "sourceColumn": "MonthName",
+            "summarizeBy": "none",
+            "sortByColumn": "MonthNumber"
+          },
+          {
+            "name": "YearMonth",
+            "dataType": "string",
+            "sourceColumn": "YearMonth",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "WeekOfYear",
+            "dataType": "int64",
+            "sourceColumn": "WeekOfYear",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "DayOfMonth",
+            "dataType": "int64",
+            "sourceColumn": "DayOfMonth",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "DayName",
+            "dataType": "string",
+            "sourceColumn": "DayName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "IsWeekend",
+            "dataType": "int64",
+            "sourceColumn": "IsWeekend",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "DimDate",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\dim_date.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"DateKey\", Int64.Type}, {\"FullDate\", type date}, {\"CalendarYear\", Int64.Type}, {\"CalendarQuarter\", type text}, {\"MonthNumber\", Int64.Type}, {\"MonthName\", type text}, {\"YearMonth\", type text}, {\"WeekOfYear\", Int64.Type}, {\"DayOfMonth\", Int64.Type}, {\"DayName\", type text}, {\"IsWeekend\", Int64.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ],
+        "dataCategory": "Time",
+        "annotations": [
+          {
+            "name": "__PBI_TemplateDateTable",
+            "value": "true"
+          },
+          {
+            "name": "DefaultDetailRowsExpression",
+            "value": "DimDate[FullDate]"
+          }
+        ]
+      },
+      {
+        "name": "DimCustomer",
+        "columns": [
+          {
+            "name": "CustomerId",
+            "dataType": "int64",
+            "sourceColumn": "CustomerId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "AcquisitionDate",
+            "dataType": "dateTime",
+            "sourceColumn": "AcquisitionDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "AcquisitionSource",
+            "dataType": "string",
+            "sourceColumn": "AcquisitionSource",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "SegmentName",
+            "dataType": "string",
+            "sourceColumn": "SegmentName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "IsActive",
+            "dataType": "int64",
+            "sourceColumn": "IsActive",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "FirstOrderDate",
+            "dataType": "dateTime",
+            "sourceColumn": "FirstOrderDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "LastOrderDate",
+            "dataType": "dateTime",
+            "sourceColumn": "LastOrderDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "LifetimeOrders",
+            "dataType": "int64",
+            "sourceColumn": "LifetimeOrders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "LifetimeRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "LifetimeRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "LifetimeRevenueAfterRefund",
+            "dataType": "decimal",
+            "sourceColumn": "LifetimeRevenueAfterRefund",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "LifetimeGrossProfit",
+            "dataType": "decimal",
+            "sourceColumn": "LifetimeGrossProfit",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "AverageOrderValue",
+            "dataType": "decimal",
+            "sourceColumn": "AverageOrderValue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "AvgDaysBetweenOrders",
+            "dataType": "double",
+            "sourceColumn": "AvgDaysBetweenOrders",
+            "summarizeBy": "none",
+            "formatString": "0.0"
+          },
+          {
+            "name": "RecencyDays",
+            "dataType": "int64",
+            "sourceColumn": "RecencyDays",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "IsRepeatCustomer",
+            "dataType": "int64",
+            "sourceColumn": "IsRepeatCustomer",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Projected12MonthRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "Projected12MonthRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "LifecycleStatus",
+            "dataType": "string",
+            "sourceColumn": "LifecycleStatus",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "DimCustomer",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\dim_customers.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"CustomerId\", Int64.Type}, {\"AcquisitionDate\", type datetime}, {\"AcquisitionSource\", type text}, {\"SegmentName\", type text}, {\"IsActive\", Int64.Type}, {\"FirstOrderDate\", type datetime}, {\"LastOrderDate\", type datetime}, {\"LifetimeOrders\", Int64.Type}, {\"LifetimeRevenue\", Currency.Type}, {\"LifetimeRevenueAfterRefund\", Currency.Type}, {\"LifetimeGrossProfit\", Currency.Type}, {\"AverageOrderValue\", Currency.Type}, {\"AvgDaysBetweenOrders\", type number}, {\"RecencyDays\", Int64.Type}, {\"IsRepeatCustomer\", Int64.Type}, {\"Projected12MonthRevenue\", Currency.Type}, {\"LifecycleStatus\", type text}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimProduct",
+        "columns": [
+          {
+            "name": "ProductId",
+            "dataType": "int64",
+            "sourceColumn": "ProductId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "SKU",
+            "dataType": "string",
+            "sourceColumn": "SKU",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ProductName",
+            "dataType": "string",
+            "sourceColumn": "ProductName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "BrandName",
+            "dataType": "string",
+            "sourceColumn": "BrandName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "CategoryId",
+            "dataType": "int64",
+            "sourceColumn": "CategoryId",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "UnitCost",
+            "dataType": "decimal",
+            "sourceColumn": "UnitCost",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "ListPrice",
+            "dataType": "decimal",
+            "sourceColumn": "ListPrice",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "LaunchDate",
+            "dataType": "dateTime",
+            "sourceColumn": "LaunchDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "IsActive",
+            "dataType": "int64",
+            "sourceColumn": "IsActive",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "SubcategoryName",
+            "dataType": "string",
+            "sourceColumn": "SubcategoryName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ParentCategoryId",
+            "dataType": "int64",
+            "sourceColumn": "ParentCategoryId",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "CategoryName",
+            "dataType": "string",
+            "sourceColumn": "CategoryName",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "DimProduct",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\dim_products.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"ProductId\", Int64.Type}, {\"SKU\", type text}, {\"ProductName\", type text}, {\"BrandName\", type text}, {\"CategoryId\", Int64.Type}, {\"UnitCost\", Currency.Type}, {\"ListPrice\", Currency.Type}, {\"LaunchDate\", type datetime}, {\"IsActive\", Int64.Type}, {\"SubcategoryName\", type text}, {\"ParentCategoryId\", Int64.Type}, {\"CategoryName\", type text}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimChannel",
+        "columns": [
+          {
+            "name": "ChannelId",
+            "dataType": "int64",
+            "sourceColumn": "ChannelId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ChannelName",
+            "dataType": "string",
+            "sourceColumn": "ChannelName",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "DimChannel",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\dim_channels.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"ChannelId\", Int64.Type}, {\"ChannelName\", type text}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimGeography",
+        "columns": [
+          {
+            "name": "GeographyKey",
+            "dataType": "int64",
+            "sourceColumn": "GeographyKey",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "City",
+            "dataType": "string",
+            "sourceColumn": "City",
+            "summarizeBy": "none",
+            "dataCategory": "City"
+          },
+          {
+            "name": "StateProvince",
+            "dataType": "string",
+            "sourceColumn": "StateProvince",
+            "summarizeBy": "none",
+            "dataCategory": "State"
+          },
+          {
+            "name": "Region",
+            "dataType": "string",
+            "sourceColumn": "Region",
+            "summarizeBy": "none",
+            "dataCategory": "Region"
+          },
+          {
+            "name": "CountryCode",
+            "dataType": "string",
+            "sourceColumn": "CountryCode",
+            "summarizeBy": "none",
+            "dataCategory": "Country"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "DimGeography",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\dim_geography.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"GeographyKey\", Int64.Type}, {\"City\", type text}, {\"StateProvince\", type text}, {\"Region\", type text}, {\"CountryCode\", type text}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "DimPromotion",
+        "columns": [
+          {
+            "name": "PromotionId",
+            "dataType": "int64",
+            "sourceColumn": "PromotionId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "PromotionCode",
+            "dataType": "string",
+            "sourceColumn": "PromotionCode",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "PromotionName",
+            "dataType": "string",
+            "sourceColumn": "PromotionName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "PromotionType",
+            "dataType": "string",
+            "sourceColumn": "PromotionType",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "DiscountValue",
+            "dataType": "decimal",
+            "sourceColumn": "DiscountValue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "MinimumOrderValue",
+            "dataType": "decimal",
+            "sourceColumn": "MinimumOrderValue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "StartDate",
+            "dataType": "dateTime",
+            "sourceColumn": "StartDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "EndDate",
+            "dataType": "dateTime",
+            "sourceColumn": "EndDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ChannelId",
+            "dataType": "int64",
+            "sourceColumn": "ChannelId",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "DimPromotion",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\dim_promotions.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"PromotionId\", Int64.Type}, {\"PromotionCode\", type text}, {\"PromotionName\", type text}, {\"PromotionType\", type text}, {\"DiscountValue\", Currency.Type}, {\"MinimumOrderValue\", Currency.Type}, {\"StartDate\", type datetime}, {\"EndDate\", type datetime}, {\"ChannelId\", Int64.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactOrders",
+        "columns": [
+          {
+            "name": "OrderId",
+            "dataType": "int64",
+            "sourceColumn": "OrderId",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "OrderDateKey",
+            "dataType": "int64",
+            "sourceColumn": "OrderDateKey",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "OrderDate",
+            "dataType": "dateTime",
+            "sourceColumn": "OrderDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "CustomerId",
+            "dataType": "int64",
+            "sourceColumn": "CustomerId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "CustomerOrderNumber",
+            "dataType": "int64",
+            "sourceColumn": "CustomerOrderNumber",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "IsRepeatPurchase",
+            "dataType": "int64",
+            "sourceColumn": "IsRepeatPurchase",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ChannelId",
+            "dataType": "int64",
+            "sourceColumn": "ChannelId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "GeographyKey",
+            "dataType": "int64",
+            "sourceColumn": "GeographyKey",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "StatusName",
+            "dataType": "string",
+            "sourceColumn": "StatusName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Units",
+            "dataType": "int64",
+            "sourceColumn": "Units",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "GrossRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "GrossRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "DiscountAmount",
+            "dataType": "decimal",
+            "sourceColumn": "DiscountAmount",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "NetRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "NetRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "RevenueAfterRefund",
+            "dataType": "decimal",
+            "sourceColumn": "RevenueAfterRefund",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "GrossProfit",
+            "dataType": "decimal",
+            "sourceColumn": "GrossProfit",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "GrossProfitAfterRefund",
+            "dataType": "decimal",
+            "sourceColumn": "GrossProfitAfterRefund",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "RefundAmount",
+            "dataType": "decimal",
+            "sourceColumn": "RefundAmount",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "ReturnedUnits",
+            "dataType": "int64",
+            "sourceColumn": "ReturnedUnits",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "PromotionId",
+            "dataType": "int64",
+            "sourceColumn": "PromotionId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "Carrier",
+            "dataType": "string",
+            "sourceColumn": "Carrier",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ShippedDate",
+            "dataType": "dateTime",
+            "sourceColumn": "ShippedDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "PromisedDeliveryDate",
+            "dataType": "dateTime",
+            "sourceColumn": "PromisedDeliveryDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "DeliveredDate",
+            "dataType": "dateTime",
+            "sourceColumn": "DeliveredDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "DeliveryDays",
+            "dataType": "int64",
+            "sourceColumn": "DeliveryDays",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "IsOnTime",
+            "dataType": "int64",
+            "sourceColumn": "IsOnTime",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactOrders",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\fact_orders.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"OrderId\", Int64.Type}, {\"OrderDateKey\", Int64.Type}, {\"OrderDate\", type datetime}, {\"CustomerId\", Int64.Type}, {\"CustomerOrderNumber\", Int64.Type}, {\"IsRepeatPurchase\", Int64.Type}, {\"ChannelId\", Int64.Type}, {\"GeographyKey\", Int64.Type}, {\"StatusName\", type text}, {\"Units\", Int64.Type}, {\"GrossRevenue\", Currency.Type}, {\"DiscountAmount\", Currency.Type}, {\"NetRevenue\", Currency.Type}, {\"RevenueAfterRefund\", Currency.Type}, {\"GrossProfit\", Currency.Type}, {\"GrossProfitAfterRefund\", Currency.Type}, {\"RefundAmount\", Currency.Type}, {\"ReturnedUnits\", Int64.Type}, {\"PromotionId\", Int64.Type}, {\"Carrier\", type text}, {\"ShippedDate\", type datetime}, {\"PromisedDeliveryDate\", type datetime}, {\"DeliveredDate\", type datetime}, {\"DeliveryDays\", Int64.Type}, {\"IsOnTime\", Int64.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactOrderLines",
+        "columns": [
+          {
+            "name": "OrderItemId",
+            "dataType": "int64",
+            "sourceColumn": "OrderItemId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "OrderId",
+            "dataType": "int64",
+            "sourceColumn": "OrderId",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "OrderDateKey",
+            "dataType": "int64",
+            "sourceColumn": "OrderDateKey",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "CustomerId",
+            "dataType": "int64",
+            "sourceColumn": "CustomerId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ProductId",
+            "dataType": "int64",
+            "sourceColumn": "ProductId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "Quantity",
+            "dataType": "int64",
+            "sourceColumn": "Quantity",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "UnitPrice",
+            "dataType": "decimal",
+            "sourceColumn": "UnitPrice",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "UnitCost",
+            "dataType": "decimal",
+            "sourceColumn": "UnitCost",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "GrossRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "GrossRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "DiscountAmount",
+            "dataType": "decimal",
+            "sourceColumn": "DiscountAmount",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "NetRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "NetRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "RevenueAfterRefund",
+            "dataType": "decimal",
+            "sourceColumn": "RevenueAfterRefund",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "COGS",
+            "dataType": "decimal",
+            "sourceColumn": "COGS",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "GrossProfit",
+            "dataType": "decimal",
+            "sourceColumn": "GrossProfit",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "GrossProfitAfterRefund",
+            "dataType": "decimal",
+            "sourceColumn": "GrossProfitAfterRefund",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "ReturnedQuantity",
+            "dataType": "int64",
+            "sourceColumn": "ReturnedQuantity",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RefundAmount",
+            "dataType": "decimal",
+            "sourceColumn": "RefundAmount",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "DiscountRate",
+            "dataType": "double",
+            "sourceColumn": "DiscountRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%",
+            "isHidden": true
+          },
+          {
+            "name": "IsValidOrder",
+            "dataType": "int64",
+            "sourceColumn": "IsValidOrder",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ChannelId",
+            "dataType": "int64",
+            "sourceColumn": "ChannelId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "PromotionId",
+            "dataType": "int64",
+            "sourceColumn": "PromotionId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "GeographyKey",
+            "dataType": "int64",
+            "sourceColumn": "GeographyKey",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactOrderLines",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\fact_order_lines.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"OrderItemId\", Int64.Type}, {\"OrderId\", Int64.Type}, {\"OrderDateKey\", Int64.Type}, {\"CustomerId\", Int64.Type}, {\"ProductId\", Int64.Type}, {\"Quantity\", Int64.Type}, {\"UnitPrice\", Currency.Type}, {\"UnitCost\", Currency.Type}, {\"GrossRevenue\", Currency.Type}, {\"DiscountAmount\", Currency.Type}, {\"NetRevenue\", Currency.Type}, {\"RevenueAfterRefund\", Currency.Type}, {\"COGS\", Currency.Type}, {\"GrossProfit\", Currency.Type}, {\"GrossProfitAfterRefund\", Currency.Type}, {\"ReturnedQuantity\", Int64.Type}, {\"RefundAmount\", Currency.Type}, {\"DiscountRate\", Percentage.Type}, {\"IsValidOrder\", Int64.Type}, {\"ChannelId\", Int64.Type}, {\"PromotionId\", Int64.Type}, {\"GeographyKey\", Int64.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactReturns",
+        "columns": [
+          {
+            "name": "ReturnItemId",
+            "dataType": "int64",
+            "sourceColumn": "ReturnItemId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ReturnId",
+            "dataType": "int64",
+            "sourceColumn": "ReturnId",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "OrderItemId",
+            "dataType": "int64",
+            "sourceColumn": "OrderItemId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "OrderId",
+            "dataType": "int64",
+            "sourceColumn": "OrderId",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ReturnDateKey",
+            "dataType": "int64",
+            "sourceColumn": "ReturnDateKey",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ReturnDate",
+            "dataType": "dateTime",
+            "sourceColumn": "ReturnDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "OrderDateKey",
+            "dataType": "int64",
+            "sourceColumn": "OrderDateKey",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "CustomerId",
+            "dataType": "int64",
+            "sourceColumn": "CustomerId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ProductId",
+            "dataType": "int64",
+            "sourceColumn": "ProductId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ChannelId",
+            "dataType": "int64",
+            "sourceColumn": "ChannelId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "PromotionId",
+            "dataType": "int64",
+            "sourceColumn": "PromotionId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "GeographyKey",
+            "dataType": "int64",
+            "sourceColumn": "GeographyKey",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ReturnReason",
+            "dataType": "string",
+            "sourceColumn": "ReturnReason",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ReturnStatus",
+            "dataType": "string",
+            "sourceColumn": "ReturnStatus",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ReturnQuantity",
+            "dataType": "int64",
+            "sourceColumn": "ReturnQuantity",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RefundAmount",
+            "dataType": "decimal",
+            "sourceColumn": "RefundAmount",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "LineReturnRate",
+            "dataType": "double",
+            "sourceColumn": "LineReturnRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactReturns",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\fact_returns.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"ReturnItemId\", Int64.Type}, {\"ReturnId\", Int64.Type}, {\"OrderItemId\", Int64.Type}, {\"OrderId\", Int64.Type}, {\"ReturnDateKey\", Int64.Type}, {\"ReturnDate\", type datetime}, {\"OrderDateKey\", Int64.Type}, {\"CustomerId\", Int64.Type}, {\"ProductId\", Int64.Type}, {\"ChannelId\", Int64.Type}, {\"PromotionId\", Int64.Type}, {\"GeographyKey\", Int64.Type}, {\"ReturnReason\", type text}, {\"ReturnStatus\", type text}, {\"ReturnQuantity\", Int64.Type}, {\"RefundAmount\", Currency.Type}, {\"LineReturnRate\", Percentage.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactReviews",
+        "columns": [
+          {
+            "name": "ReviewId",
+            "dataType": "int64",
+            "sourceColumn": "ReviewId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ReviewDateKey",
+            "dataType": "int64",
+            "sourceColumn": "ReviewDateKey",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ReviewDate",
+            "dataType": "dateTime",
+            "sourceColumn": "ReviewDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "CustomerId",
+            "dataType": "int64",
+            "sourceColumn": "CustomerId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ProductId",
+            "dataType": "int64",
+            "sourceColumn": "ProductId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "OrderItemId",
+            "dataType": "int64",
+            "sourceColumn": "OrderItemId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "Rating",
+            "dataType": "int64",
+            "sourceColumn": "Rating",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ReviewTitle",
+            "dataType": "string",
+            "sourceColumn": "ReviewTitle",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "ReviewText",
+            "dataType": "string",
+            "sourceColumn": "ReviewText",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "IsVerifiedPurchase",
+            "dataType": "int64",
+            "sourceColumn": "IsVerifiedPurchase",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "HelpfulVotes",
+            "dataType": "int64",
+            "sourceColumn": "HelpfulVotes",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "WasReturned",
+            "dataType": "int64",
+            "sourceColumn": "WasReturned",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactReviews",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\fact_reviews.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"ReviewId\", Int64.Type}, {\"ReviewDateKey\", Int64.Type}, {\"ReviewDate\", type datetime}, {\"CustomerId\", Int64.Type}, {\"ProductId\", Int64.Type}, {\"OrderItemId\", Int64.Type}, {\"Rating\", Int64.Type}, {\"ReviewTitle\", type text}, {\"ReviewText\", type text}, {\"IsVerifiedPurchase\", Int64.Type}, {\"HelpfulVotes\", Int64.Type}, {\"WasReturned\", Int64.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactCampaignPerformance",
+        "columns": [
+          {
+            "name": "PromotionId",
+            "dataType": "int64",
+            "sourceColumn": "PromotionId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "PromotionCode",
+            "dataType": "string",
+            "sourceColumn": "PromotionCode",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "PromotionName",
+            "dataType": "string",
+            "sourceColumn": "PromotionName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "PromotionType",
+            "dataType": "string",
+            "sourceColumn": "PromotionType",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "DiscountValue",
+            "dataType": "decimal",
+            "sourceColumn": "DiscountValue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "MinimumOrderValue",
+            "dataType": "decimal",
+            "sourceColumn": "MinimumOrderValue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "StartDate",
+            "dataType": "dateTime",
+            "sourceColumn": "StartDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "EndDate",
+            "dataType": "dateTime",
+            "sourceColumn": "EndDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ChannelId",
+            "dataType": "int64",
+            "sourceColumn": "ChannelId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "Audience",
+            "dataType": "int64",
+            "sourceColumn": "Audience",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Clicks",
+            "dataType": "int64",
+            "sourceColumn": "Clicks",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Conversions",
+            "dataType": "int64",
+            "sourceColumn": "Conversions",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "AttributedOrders",
+            "dataType": "int64",
+            "sourceColumn": "AttributedOrders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "AttributedRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "AttributedRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "AttributedRevenueAfterRefund",
+            "dataType": "decimal",
+            "sourceColumn": "AttributedRevenueAfterRefund",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "AttributedGrossProfit",
+            "dataType": "decimal",
+            "sourceColumn": "AttributedGrossProfit",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "DiscountCost",
+            "dataType": "decimal",
+            "sourceColumn": "DiscountCost",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-",
+            "isHidden": true
+          },
+          {
+            "name": "ClickThroughRate",
+            "dataType": "double",
+            "sourceColumn": "ClickThroughRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%",
+            "isHidden": true
+          },
+          {
+            "name": "ClickToConversionRate",
+            "dataType": "double",
+            "sourceColumn": "ClickToConversionRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%",
+            "isHidden": true
+          },
+          {
+            "name": "StartDateKey",
+            "dataType": "int64",
+            "sourceColumn": "StartDateKey",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "EndDateKey",
+            "dataType": "int64",
+            "sourceColumn": "EndDateKey",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactCampaignPerformance",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\campaign_performance.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"PromotionId\", Int64.Type}, {\"PromotionCode\", type text}, {\"PromotionName\", type text}, {\"PromotionType\", type text}, {\"DiscountValue\", Currency.Type}, {\"MinimumOrderValue\", Currency.Type}, {\"StartDate\", type datetime}, {\"EndDate\", type datetime}, {\"ChannelId\", Int64.Type}, {\"Audience\", Int64.Type}, {\"Clicks\", Int64.Type}, {\"Conversions\", Int64.Type}, {\"AttributedOrders\", Int64.Type}, {\"AttributedRevenue\", Currency.Type}, {\"AttributedRevenueAfterRefund\", Currency.Type}, {\"AttributedGrossProfit\", Currency.Type}, {\"DiscountCost\", Currency.Type}, {\"ClickThroughRate\", Percentage.Type}, {\"ClickToConversionRate\", Percentage.Type}, {\"StartDateKey\", Int64.Type}, {\"EndDateKey\", Int64.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactCohortRetention",
+        "columns": [
+          {
+            "name": "CohortMonth",
+            "dataType": "dateTime",
+            "sourceColumn": "CohortMonth",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "MonthsSinceFirstOrder",
+            "dataType": "int64",
+            "sourceColumn": "MonthsSinceFirstOrder",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ActiveCustomers",
+            "dataType": "int64",
+            "sourceColumn": "ActiveCustomers",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "CohortSize",
+            "dataType": "int64",
+            "sourceColumn": "CohortSize",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RetentionRate",
+            "dataType": "double",
+            "sourceColumn": "RetentionRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactCohortRetention",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\cohort_retention.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"CohortMonth\", type datetime}, {\"MonthsSinceFirstOrder\", Int64.Type}, {\"ActiveCustomers\", Int64.Type}, {\"CohortSize\", Int64.Type}, {\"RetentionRate\", Percentage.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "FactRfmSnapshot",
+        "columns": [
+          {
+            "name": "CustomerId",
+            "dataType": "int64",
+            "sourceColumn": "CustomerId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "LastOrderDate",
+            "dataType": "dateTime",
+            "sourceColumn": "LastOrderDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Frequency",
+            "dataType": "int64",
+            "sourceColumn": "Frequency",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "MonetaryValue",
+            "dataType": "decimal",
+            "sourceColumn": "MonetaryValue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "SnapshotDate",
+            "dataType": "dateTime",
+            "sourceColumn": "SnapshotDate",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RecencyDays",
+            "dataType": "int64",
+            "sourceColumn": "RecencyDays",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RScore",
+            "dataType": "int64",
+            "sourceColumn": "RScore",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "FScore",
+            "dataType": "int64",
+            "sourceColumn": "FScore",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "MScore",
+            "dataType": "int64",
+            "sourceColumn": "MScore",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RfmCode",
+            "dataType": "string",
+            "sourceColumn": "RfmCode",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RfmSegment",
+            "dataType": "string",
+            "sourceColumn": "RfmSegment",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "SnapshotDateKey",
+            "dataType": "int64",
+            "sourceColumn": "SnapshotDateKey",
+            "summarizeBy": "none",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "FactRfmSnapshot",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\rfm_segments.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"CustomerId\", Int64.Type}, {\"LastOrderDate\", type datetime}, {\"Frequency\", Int64.Type}, {\"MonetaryValue\", Currency.Type}, {\"SnapshotDate\", type datetime}, {\"RecencyDays\", Int64.Type}, {\"RScore\", Int64.Type}, {\"FScore\", Int64.Type}, {\"MScore\", Int64.Type}, {\"RfmCode\", type text}, {\"RfmSegment\", type text}, {\"SnapshotDateKey\", Int64.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ]
+      },
+      {
+        "name": "ValidationAcquisition",
+        "columns": [
+          {
+            "name": "AcquisitionSource",
+            "dataType": "string",
+            "sourceColumn": "AcquisitionSource",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Customers",
+            "dataType": "int64",
+            "sourceColumn": "Customers",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Orders",
+            "dataType": "int64",
+            "sourceColumn": "Orders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RevenueAfterRefund",
+            "dataType": "decimal",
+            "sourceColumn": "RevenueAfterRefund",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "GrossProfit",
+            "dataType": "decimal",
+            "sourceColumn": "GrossProfit",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "AverageOrderValue",
+            "dataType": "decimal",
+            "sourceColumn": "AverageOrderValue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "RepeatOrders",
+            "dataType": "int64",
+            "sourceColumn": "RepeatOrders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "AcquiredCustomers",
+            "dataType": "int64",
+            "sourceColumn": "AcquiredCustomers",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "PurchaserConversionRate",
+            "dataType": "double",
+            "sourceColumn": "PurchaserConversionRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "RevenuePerPurchaser",
+            "dataType": "decimal",
+            "sourceColumn": "RevenuePerPurchaser",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "RepeatOrderRate",
+            "dataType": "double",
+            "sourceColumn": "RepeatOrderRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ValidationAcquisition",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\acquisition_performance.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"AcquisitionSource\", type text}, {\"Customers\", Int64.Type}, {\"Orders\", Int64.Type}, {\"RevenueAfterRefund\", Currency.Type}, {\"GrossProfit\", Currency.Type}, {\"AverageOrderValue\", Currency.Type}, {\"RepeatOrders\", Int64.Type}, {\"AcquiredCustomers\", Int64.Type}, {\"PurchaserConversionRate\", Percentage.Type}, {\"RevenuePerPurchaser\", Currency.Type}, {\"RepeatOrderRate\", Percentage.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ],
+        "isHidden": true
+      },
+      {
+        "name": "ValidationCategory",
+        "columns": [
+          {
+            "name": "CategoryName",
+            "dataType": "string",
+            "sourceColumn": "CategoryName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Products",
+            "dataType": "int64",
+            "sourceColumn": "Products",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Orders",
+            "dataType": "int64",
+            "sourceColumn": "Orders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "UnitsSold",
+            "dataType": "int64",
+            "sourceColumn": "UnitsSold",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "NetRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "NetRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "RevenueAfterRefund",
+            "dataType": "decimal",
+            "sourceColumn": "RevenueAfterRefund",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "GrossProfit",
+            "dataType": "decimal",
+            "sourceColumn": "GrossProfit",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "ReturnedUnits",
+            "dataType": "int64",
+            "sourceColumn": "ReturnedUnits",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RefundAmount",
+            "dataType": "decimal",
+            "sourceColumn": "RefundAmount",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "DiscountAmount",
+            "dataType": "decimal",
+            "sourceColumn": "DiscountAmount",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "GrossMarginRate",
+            "dataType": "double",
+            "sourceColumn": "GrossMarginRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "UnitReturnRate",
+            "dataType": "double",
+            "sourceColumn": "UnitReturnRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "RefundToRevenueRate",
+            "dataType": "double",
+            "sourceColumn": "RefundToRevenueRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ValidationCategory",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\category_performance.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"CategoryName\", type text}, {\"Products\", Int64.Type}, {\"Orders\", Int64.Type}, {\"UnitsSold\", Int64.Type}, {\"NetRevenue\", Currency.Type}, {\"RevenueAfterRefund\", Currency.Type}, {\"GrossProfit\", Currency.Type}, {\"ReturnedUnits\", Int64.Type}, {\"RefundAmount\", Currency.Type}, {\"DiscountAmount\", Currency.Type}, {\"GrossMarginRate\", Percentage.Type}, {\"UnitReturnRate\", Percentage.Type}, {\"RefundToRevenueRate\", Percentage.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ],
+        "isHidden": true
+      },
+      {
+        "name": "ValidationDelivery",
+        "columns": [
+          {
+            "name": "Carrier",
+            "dataType": "string",
+            "sourceColumn": "Carrier",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Region",
+            "dataType": "string",
+            "sourceColumn": "Region",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "DeliveredOrders",
+            "dataType": "int64",
+            "sourceColumn": "DeliveredOrders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "AverageDeliveryDays",
+            "dataType": "double",
+            "sourceColumn": "AverageDeliveryDays",
+            "summarizeBy": "none",
+            "formatString": "0.0"
+          },
+          {
+            "name": "MedianDeliveryDays",
+            "dataType": "double",
+            "sourceColumn": "MedianDeliveryDays",
+            "summarizeBy": "none",
+            "formatString": "0.0"
+          },
+          {
+            "name": "OnTimeRate",
+            "dataType": "double",
+            "sourceColumn": "OnTimeRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "LateOrders",
+            "dataType": "int64",
+            "sourceColumn": "LateOrders",
+            "summarizeBy": "none"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ValidationDelivery",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\delivery_performance.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"Carrier\", type text}, {\"Region\", type text}, {\"DeliveredOrders\", Int64.Type}, {\"AverageDeliveryDays\", type number}, {\"MedianDeliveryDays\", type number}, {\"OnTimeRate\", Percentage.Type}, {\"LateOrders\", Int64.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ],
+        "isHidden": true
+      },
+      {
+        "name": "ValidationDiscount",
+        "columns": [
+          {
+            "name": "MonthStart",
+            "dataType": "dateTime",
+            "sourceColumn": "MonthStart",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ChannelName",
+            "dataType": "string",
+            "sourceColumn": "ChannelName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "PromotionGroup",
+            "dataType": "string",
+            "sourceColumn": "PromotionGroup",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Orders",
+            "dataType": "int64",
+            "sourceColumn": "Orders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "AverageOrderValue",
+            "dataType": "decimal",
+            "sourceColumn": "AverageOrderValue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "RevenueAfterRefund",
+            "dataType": "decimal",
+            "sourceColumn": "RevenueAfterRefund",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "GrossProfit",
+            "dataType": "decimal",
+            "sourceColumn": "GrossProfit",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "DiscountCost",
+            "dataType": "decimal",
+            "sourceColumn": "DiscountCost",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "GrossProfitPerOrder",
+            "dataType": "decimal",
+            "sourceColumn": "GrossProfitPerOrder",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ValidationDiscount",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\discount_effectiveness.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"MonthStart\", type datetime}, {\"ChannelName\", type text}, {\"PromotionGroup\", type text}, {\"Orders\", Int64.Type}, {\"AverageOrderValue\", Currency.Type}, {\"RevenueAfterRefund\", Currency.Type}, {\"GrossProfit\", Currency.Type}, {\"DiscountCost\", Currency.Type}, {\"GrossProfitPerOrder\", Currency.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ],
+        "isHidden": true
+      },
+      {
+        "name": "ValidationMonthly",
+        "columns": [
+          {
+            "name": "MonthStart",
+            "dataType": "dateTime",
+            "sourceColumn": "MonthStart",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Orders",
+            "dataType": "int64",
+            "sourceColumn": "Orders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ActiveCustomers",
+            "dataType": "int64",
+            "sourceColumn": "ActiveCustomers",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RepeatOrders",
+            "dataType": "int64",
+            "sourceColumn": "RepeatOrders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "NetRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "NetRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "RevenueAfterRefund",
+            "dataType": "decimal",
+            "sourceColumn": "RevenueAfterRefund",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "GrossProfit",
+            "dataType": "decimal",
+            "sourceColumn": "GrossProfit",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "AverageOrderValue",
+            "dataType": "decimal",
+            "sourceColumn": "AverageOrderValue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "Discounts",
+            "dataType": "decimal",
+            "sourceColumn": "Discounts",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "ReturnedUnits",
+            "dataType": "int64",
+            "sourceColumn": "ReturnedUnits",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "PreviousMonthRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "PreviousMonthRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "PreviousYearRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "PreviousYearRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "RevenueMoMPct",
+            "dataType": "double",
+            "sourceColumn": "RevenueMoMPct",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "RevenueYoYPct",
+            "dataType": "double",
+            "sourceColumn": "RevenueYoYPct",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "Rolling3MonthRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "Rolling3MonthRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "Rolling12MonthRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "Rolling12MonthRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "RunningRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "RunningRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "GrossMarginRate",
+            "dataType": "double",
+            "sourceColumn": "GrossMarginRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "RepeatOrderRate",
+            "dataType": "double",
+            "sourceColumn": "RepeatOrderRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ValidationMonthly",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\monthly_performance.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"MonthStart\", type datetime}, {\"Orders\", Int64.Type}, {\"ActiveCustomers\", Int64.Type}, {\"RepeatOrders\", Int64.Type}, {\"NetRevenue\", Currency.Type}, {\"RevenueAfterRefund\", Currency.Type}, {\"GrossProfit\", Currency.Type}, {\"AverageOrderValue\", Currency.Type}, {\"Discounts\", Currency.Type}, {\"ReturnedUnits\", Int64.Type}, {\"PreviousMonthRevenue\", Currency.Type}, {\"PreviousYearRevenue\", Currency.Type}, {\"RevenueMoMPct\", Percentage.Type}, {\"RevenueYoYPct\", Percentage.Type}, {\"Rolling3MonthRevenue\", Currency.Type}, {\"Rolling12MonthRevenue\", Currency.Type}, {\"RunningRevenue\", Currency.Type}, {\"GrossMarginRate\", Percentage.Type}, {\"RepeatOrderRate\", Percentage.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ],
+        "isHidden": true
+      },
+      {
+        "name": "ValidationPareto",
+        "columns": [
+          {
+            "name": "CustomerId",
+            "dataType": "int64",
+            "sourceColumn": "CustomerId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "LifetimeRevenueAfterRefund",
+            "dataType": "decimal",
+            "sourceColumn": "LifetimeRevenueAfterRefund",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "CustomerRank",
+            "dataType": "int64",
+            "sourceColumn": "CustomerRank",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "CumulativeCustomerShare",
+            "dataType": "double",
+            "sourceColumn": "CumulativeCustomerShare",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "CumulativeRevenueShare",
+            "dataType": "double",
+            "sourceColumn": "CumulativeRevenueShare",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ValidationPareto",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\pareto_curve.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"CustomerId\", Int64.Type}, {\"LifetimeRevenueAfterRefund\", Currency.Type}, {\"CustomerRank\", Int64.Type}, {\"CumulativeCustomerShare\", Percentage.Type}, {\"CumulativeRevenueShare\", Percentage.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ],
+        "isHidden": true
+      },
+      {
+        "name": "ValidationProduct",
+        "columns": [
+          {
+            "name": "ProductId",
+            "dataType": "int64",
+            "sourceColumn": "ProductId",
+            "summarizeBy": "none",
+            "isHidden": true
+          },
+          {
+            "name": "SKU",
+            "dataType": "string",
+            "sourceColumn": "SKU",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ProductName",
+            "dataType": "string",
+            "sourceColumn": "ProductName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "BrandName",
+            "dataType": "string",
+            "sourceColumn": "BrandName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "SubcategoryName",
+            "dataType": "string",
+            "sourceColumn": "SubcategoryName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "CategoryName",
+            "dataType": "string",
+            "sourceColumn": "CategoryName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Orders",
+            "dataType": "int64",
+            "sourceColumn": "Orders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "UnitsSold",
+            "dataType": "int64",
+            "sourceColumn": "UnitsSold",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "GrossRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "GrossRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "DiscountAmount",
+            "dataType": "decimal",
+            "sourceColumn": "DiscountAmount",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "NetRevenue",
+            "dataType": "decimal",
+            "sourceColumn": "NetRevenue",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "RevenueAfterRefund",
+            "dataType": "decimal",
+            "sourceColumn": "RevenueAfterRefund",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "GrossProfit",
+            "dataType": "decimal",
+            "sourceColumn": "GrossProfit",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "ReturnedUnits",
+            "dataType": "int64",
+            "sourceColumn": "ReturnedUnits",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RefundAmount",
+            "dataType": "decimal",
+            "sourceColumn": "RefundAmount",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "Reviews",
+            "dataType": "int64",
+            "sourceColumn": "Reviews",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "AverageRating",
+            "dataType": "double",
+            "sourceColumn": "AverageRating",
+            "summarizeBy": "none",
+            "formatString": "0.0"
+          },
+          {
+            "name": "GrossMarginRate",
+            "dataType": "double",
+            "sourceColumn": "GrossMarginRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "UnitReturnRate",
+            "dataType": "double",
+            "sourceColumn": "UnitReturnRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "DiscountRate",
+            "dataType": "double",
+            "sourceColumn": "DiscountRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ValidationProduct",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\product_performance.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"ProductId\", Int64.Type}, {\"SKU\", type text}, {\"ProductName\", type text}, {\"BrandName\", type text}, {\"SubcategoryName\", type text}, {\"CategoryName\", type text}, {\"Orders\", Int64.Type}, {\"UnitsSold\", Int64.Type}, {\"GrossRevenue\", Currency.Type}, {\"DiscountAmount\", Currency.Type}, {\"NetRevenue\", Currency.Type}, {\"RevenueAfterRefund\", Currency.Type}, {\"GrossProfit\", Currency.Type}, {\"ReturnedUnits\", Int64.Type}, {\"RefundAmount\", Currency.Type}, {\"Reviews\", Int64.Type}, {\"AverageRating\", type number}, {\"GrossMarginRate\", Percentage.Type}, {\"UnitReturnRate\", Percentage.Type}, {\"DiscountRate\", Percentage.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ],
+        "isHidden": true
+      },
+      {
+        "name": "ValidationRegionalChannel",
+        "columns": [
+          {
+            "name": "Region",
+            "dataType": "string",
+            "sourceColumn": "Region",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ChannelName",
+            "dataType": "string",
+            "sourceColumn": "ChannelName",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Orders",
+            "dataType": "int64",
+            "sourceColumn": "Orders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Customers",
+            "dataType": "int64",
+            "sourceColumn": "Customers",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "RevenueAfterRefund",
+            "dataType": "decimal",
+            "sourceColumn": "RevenueAfterRefund",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "GrossProfit",
+            "dataType": "decimal",
+            "sourceColumn": "GrossProfit",
+            "summarizeBy": "none",
+            "formatString": "$#,0.00;($#,0.00);-"
+          },
+          {
+            "name": "RepeatOrders",
+            "dataType": "int64",
+            "sourceColumn": "RepeatOrders",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "GrossMarginRate",
+            "dataType": "double",
+            "sourceColumn": "GrossMarginRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          },
+          {
+            "name": "RepeatOrderRate",
+            "dataType": "double",
+            "sourceColumn": "RepeatOrderRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ValidationRegionalChannel",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\regional_channel_performance.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"Region\", type text}, {\"ChannelName\", type text}, {\"Orders\", Int64.Type}, {\"Customers\", Int64.Type}, {\"RevenueAfterRefund\", Currency.Type}, {\"GrossProfit\", Currency.Type}, {\"RepeatOrders\", Int64.Type}, {\"GrossMarginRate\", Percentage.Type}, {\"RepeatOrderRate\", Percentage.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ],
+        "isHidden": true
+      },
+      {
+        "name": "ValidationReviewReturn",
+        "columns": [
+          {
+            "name": "Rating",
+            "dataType": "int64",
+            "sourceColumn": "Rating",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "Reviews",
+            "dataType": "int64",
+            "sourceColumn": "Reviews",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ReturnedReviews",
+            "dataType": "int64",
+            "sourceColumn": "ReturnedReviews",
+            "summarizeBy": "none"
+          },
+          {
+            "name": "ReturnRate",
+            "dataType": "double",
+            "sourceColumn": "ReturnRate",
+            "summarizeBy": "none",
+            "formatString": "0.0%"
+          }
+        ],
+        "partitions": [
+          {
+            "name": "ValidationReviewReturn",
+            "mode": "import",
+            "source": {
+              "type": "m",
+              "expression": "let\n    Source = Csv.Document(\n        File.Contents(CsvRoot & \"\\\\review_return_relationship.csv\"),\n        [Delimiter = \",\", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]\n    ),\n    PromotedHeaders = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),\n    TypedColumns = Table.TransformColumnTypes(PromotedHeaders, {{\"Rating\", Int64.Type}, {\"Reviews\", Int64.Type}, {\"ReturnedReviews\", Int64.Type}, {\"ReturnRate\", Percentage.Type}}, \"en-US\")\nin\n    TypedColumns"
+            }
+          }
+        ],
+        "isHidden": true
+      },
+      {
+        "name": "_Measures",
+        "isHidden": false,
+        "columns": [
+          {
+            "name": "Placeholder",
+            "dataType": "int64",
+            "sourceColumn": "Placeholder",
+            "isHidden": true
+          }
+        ],
+        "partitions": [
+          {
+            "name": "_Measures",
+            "mode": "import",
+            "source": {
+              "type": "calculated",
+              "expression": "ROW(\"Placeholder\", 1)"
+            }
+          }
+        ],
+        "measures": [
+          {
+            "name": "Revenue",
+            "expression": "SUM ( FactOrders[NetRevenue] )",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Revenue",
+            "description": "Non-cancelled gross item value less line discounts"
+          },
+          {
+            "name": "Revenue After Refund",
+            "expression": "SUM ( FactOrders[RevenueAfterRefund] )",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Revenue",
+            "description": "Revenue less non-rejected refunds"
+          },
+          {
+            "name": "Gross Revenue",
+            "expression": "SUM ( FactOrders[GrossRevenue] )",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Revenue",
+            "description": "Item value before discounts"
+          },
+          {
+            "name": "Discount Amount",
+            "expression": "SUM ( FactOrders[DiscountAmount] )",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Revenue",
+            "description": "Granted line discount"
+          },
+          {
+            "name": "Refund Amount",
+            "expression": "SUM ( FactOrders[RefundAmount] )",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Revenue",
+            "description": "Non-rejected refund exposure"
+          },
+          {
+            "name": "Gross Profit",
+            "expression": "SUM ( FactOrders[GrossProfit] )",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Profitability",
+            "description": "Revenue less product cost"
+          },
+          {
+            "name": "Gross Profit After Refund",
+            "expression": "SUM ( FactOrders[GrossProfitAfterRefund] )",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Profitability",
+            "description": "Gross profit less non-rejected refunds"
+          },
+          {
+            "name": "Gross Margin %",
+            "expression": "DIVIDE ( [Gross Profit], [Revenue] )",
+            "formatString": "0.0%",
+            "displayFolder": "Profitability",
+            "description": "Gross profit divided by revenue"
+          },
+          {
+            "name": "Gross Margin After Refund %",
+            "expression": "DIVIDE ( [Gross Profit After Refund], [Revenue After Refund] )",
+            "formatString": "0.0%",
+            "displayFolder": "Profitability",
+            "description": "After-refund profit divided by after-refund revenue"
+          },
+          {
+            "name": "Discount Rate",
+            "expression": "DIVIDE ( [Discount Amount], [Gross Revenue] )",
+            "formatString": "0.0%",
+            "displayFolder": "Profitability",
+            "description": "Discount amount divided by gross revenue"
+          },
+          {
+            "name": "Refund Rate",
+            "expression": "DIVIDE ( [Refund Amount], [Revenue] )",
+            "formatString": "0.0%",
+            "displayFolder": "Profitability",
+            "description": "Refund amount divided by revenue"
+          },
+          {
+            "name": "Orders",
+            "expression": "CALCULATE (\n    DISTINCTCOUNT ( FactOrders[OrderId] ),\n    KEEPFILTERS ( FactOrders[StatusName] <> \"Cancelled\" )\n)",
+            "formatString": "#,0",
+            "displayFolder": "Sales",
+            "description": "Distinct non-cancelled orders"
+          },
+          {
+            "name": "Units Sold",
+            "expression": "CALCULATE (\n    SUM ( FactOrderLines[Quantity] ),\n    KEEPFILTERS ( FactOrderLines[IsValidOrder] = 1 )\n)",
+            "formatString": "#,0",
+            "displayFolder": "Sales",
+            "description": "Units on non-cancelled order lines"
+          },
+          {
+            "name": "Active Customers",
+            "expression": "CALCULATE (\n    DISTINCTCOUNT ( FactOrders[CustomerId] ),\n    KEEPFILTERS ( FactOrders[StatusName] <> \"Cancelled\" )\n)",
+            "formatString": "#,0",
+            "displayFolder": "Customer",
+            "description": "Customers with a non-cancelled order in filter context"
+          },
+          {
+            "name": "New Customers",
+            "expression": "",
+            "formatString": "#,0",
+            "displayFolder": "Customer",
+            "description": "Customers whose first order falls inside the selected period"
+          },
+          {
+            "name": "VAR PeriodStart",
+            "expression": "MIN ( DimDate[FullDate] )"
+          },
+          {
+            "name": "VAR PeriodEnd",
+            "expression": "MAX ( DimDate[FullDate] )\nRETURN\n    CALCULATE (\n        DISTINCTCOUNT ( DimCustomer[CustomerId] ),\n        REMOVEFILTERS ( DimDate ),\n        KEEPFILTERS ( DimCustomer[FirstOrderDate] >= PeriodStart ),\n        KEEPFILTERS ( DimCustomer[FirstOrderDate] <= PeriodEnd )\n    )"
+          },
+          {
+            "name": "Repeat Orders",
+            "expression": "CALCULATE (\n    DISTINCTCOUNT ( FactOrders[OrderId] ),\n    KEEPFILTERS ( FactOrders[StatusName] <> \"Cancelled\" ),\n    KEEPFILTERS ( FactOrders[IsRepeatPurchase] = 1 )\n)",
+            "formatString": "#,0",
+            "displayFolder": "Customer",
+            "description": "Orders after a customer's first valid order"
+          },
+          {
+            "name": "Repeat Customers",
+            "expression": "CALCULATE (\n    DISTINCTCOUNT ( FactOrders[CustomerId] ),\n    KEEPFILTERS ( FactOrders[StatusName] <> \"Cancelled\" ),\n    KEEPFILTERS ( FactOrders[IsRepeatPurchase] = 1 )\n)",
+            "formatString": "#,0",
+            "displayFolder": "Customer",
+            "description": "Customers placing a repeat order in filter context"
+          },
+          {
+            "name": "Repeat Order Rate",
+            "expression": "DIVIDE ( [Repeat Orders], [Orders] )",
+            "formatString": "0.0%",
+            "displayFolder": "Customer",
+            "description": "Repeat orders divided by orders"
+          },
+          {
+            "name": "Average Order Value",
+            "expression": "DIVIDE ( [Revenue], [Orders] )",
+            "formatString": "$#,0.00",
+            "displayFolder": "Sales",
+            "description": "Revenue divided by orders"
+          },
+          {
+            "name": "Revenue per Active Customer",
+            "expression": "DIVIDE ( [Revenue After Refund], [Active Customers] )",
+            "formatString": "$#,0.00",
+            "displayFolder": "Customer",
+            "description": "After-refund revenue divided by active customers"
+          },
+          {
+            "name": "Average Historical CLV",
+            "expression": "CALCULATE (\n    AVERAGE ( DimCustomer[LifetimeRevenueAfterRefund] ),\n    KEEPFILTERS ( DimCustomer[LifetimeOrders] > 0 )\n)",
+            "formatString": "$#,0.00",
+            "displayFolder": "Customer",
+            "description": "Mean observed lifetime after-refund revenue among purchasers"
+          },
+          {
+            "name": "Projected 12M Customer Value",
+            "expression": "CALCULATE (\n    AVERAGE ( DimCustomer[Projected12MonthRevenue] ),\n    KEEPFILTERS ( DimCustomer[LifetimeOrders] > 0 )\n)",
+            "formatString": "$#,0.00",
+            "displayFolder": "Customer",
+            "description": "Mean annualized after-refund revenue run rate"
+          },
+          {
+            "name": "Customers at Risk",
+            "expression": "CALCULATE (\n    DISTINCTCOUNT ( DimCustomer[CustomerId] ),\n    KEEPFILTERS ( DimCustomer[LifecycleStatus] IN { \"At Risk\", \"High Risk\" } )\n)",
+            "formatString": "#,0",
+            "displayFolder": "Customer",
+            "description": "Customers classified At Risk or High Risk"
+          },
+          {
+            "name": "Churn Indicator %",
+            "expression": "DIVIDE (\n    [Customers at Risk],\n    CALCULATE (\n        DISTINCTCOUNT ( DimCustomer[CustomerId] ),\n        KEEPFILTERS ( DimCustomer[LifetimeOrders] > 0 )\n    )\n)",
+            "formatString": "0.0%",
+            "displayFolder": "Customer",
+            "description": "At-risk customers divided by customers with an order"
+          },
+          {
+            "name": "Revenue at Risk",
+            "expression": "CALCULATE (\n    SUM ( DimCustomer[LifetimeRevenueAfterRefund] ),\n    KEEPFILTERS ( DimCustomer[LifecycleStatus] IN { \"At Risk\", \"High Risk\" } )\n)",
+            "formatString": "$#,0",
+            "displayFolder": "Customer",
+            "description": "Historical after-refund revenue of at-risk customers"
+          },
+          {
+            "name": "Product Revenue",
+            "expression": "SUM ( FactOrderLines[NetRevenue] )",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Product",
+            "description": "Line-grain revenue for product analysis"
+          },
+          {
+            "name": "Product Gross Profit",
+            "expression": "SUM ( FactOrderLines[GrossProfit] )",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Product",
+            "description": "Line-grain gross profit"
+          },
+          {
+            "name": "Product Gross Margin %",
+            "expression": "DIVIDE ( [Product Gross Profit], [Product Revenue] )",
+            "formatString": "0.0%",
+            "displayFolder": "Product",
+            "description": "Product gross profit divided by product revenue"
+          },
+          {
+            "name": "Returned Units",
+            "expression": "CALCULATE (\n    SUM ( FactOrderLines[ReturnedQuantity] ),\n    KEEPFILTERS ( FactOrderLines[IsValidOrder] = 1 )\n)",
+            "formatString": "#,0",
+            "displayFolder": "Returns",
+            "description": "Units on non-rejected returns"
+          },
+          {
+            "name": "Return Rate",
+            "expression": "DIVIDE ( [Returned Units], [Units Sold] )",
+            "formatString": "0.0%",
+            "displayFolder": "Returns",
+            "description": "Returned units divided by valid units sold"
+          },
+          {
+            "name": "Return Event Units",
+            "expression": "CALCULATE (\n    SUM ( FactReturns[ReturnQuantity] ),\n    KEEPFILTERS ( FactReturns[ReturnStatus] <> \"Rejected\" )\n)",
+            "formatString": "#,0",
+            "displayFolder": "Returns",
+            "description": "Non-rejected returned units filtered by return event date and return attributes"
+          },
+          {
+            "name": "Return Refund Amount",
+            "expression": "CALCULATE (\n    SUM ( FactReturns[RefundAmount] ),\n    KEEPFILTERS ( FactReturns[ReturnStatus] <> \"Rejected\" )\n)",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Returns",
+            "description": "Non-rejected refund amount filtered by return event date and return attributes"
+          },
+          {
+            "name": "Product Refund Amount",
+            "expression": "CALCULATE (\n    SUM ( FactOrderLines[RefundAmount] ),\n    KEEPFILTERS ( FactOrderLines[IsValidOrder] = 1 )\n)",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Returns",
+            "description": "Refund amount aligned to sold-order-line date and product context"
+          },
+          {
+            "name": "Delivered Orders",
+            "expression": "CALCULATE ( [Orders], KEEPFILTERS ( NOT ISBLANK ( FactOrders[DeliveredDate] ) ) )",
+            "formatString": "#,0",
+            "displayFolder": "Operations",
+            "description": "Valid orders with a delivered date"
+          },
+          {
+            "name": "On-Time Deliveries",
+            "expression": "",
+            "formatString": "#,0",
+            "displayFolder": "Operations",
+            "description": "Valid orders delivered by promised date"
+          },
+          {
+            "name": "CALCULATE ( [Orders], KEEPFILTERS ( FactOrders[IsOnTime]",
+            "expression": "1 ) )"
+          },
+          {
+            "name": "On-Time Delivery %",
+            "expression": "DIVIDE ( [On-Time Deliveries], [Delivered Orders] )",
+            "formatString": "0.0%",
+            "displayFolder": "Operations",
+            "description": "On-time deliveries divided by delivered orders"
+          },
+          {
+            "name": "Average Delivery Days",
+            "expression": "CALCULATE (\n    AVERAGE ( FactOrders[DeliveryDays] ),\n    KEEPFILTERS ( NOT ISBLANK ( FactOrders[DeliveredDate] ) )\n)",
+            "formatString": "0.0",
+            "displayFolder": "Operations",
+            "description": "Mean calendar days from order to delivery"
+          },
+          {
+            "name": "Reviews",
+            "expression": "COUNTROWS ( FactReviews )",
+            "formatString": "#,0",
+            "displayFolder": "Reviews",
+            "description": "Review row count"
+          },
+          {
+            "name": "Average Rating",
+            "expression": "AVERAGE ( FactReviews[Rating] )",
+            "formatString": "0.00",
+            "displayFolder": "Reviews",
+            "description": "Mean review rating"
+          },
+          {
+            "name": "Verified Review %",
+            "expression": "DIVIDE (\n    CALCULATE ( [Reviews], KEEPFILTERS ( FactReviews[IsVerifiedPurchase] = 1 ) ),\n    [Reviews]\n)",
+            "formatString": "0.0%",
+            "displayFolder": "Reviews",
+            "description": "Verified-purchase reviews divided by reviews"
+          },
+          {
+            "name": "Reviewed Item Return Rate",
+            "expression": "DIVIDE (\n    CALCULATE ( [Reviews], KEEPFILTERS ( FactReviews[WasReturned] = 1 ) ),\n    [Reviews]\n)",
+            "formatString": "0.0%",
+            "displayFolder": "Reviews",
+            "description": "Reviews linked to returned items divided by reviews"
+          },
+          {
+            "name": "Campaign Audience",
+            "expression": "SUM ( FactCampaignPerformance[Audience] )",
+            "formatString": "#,0",
+            "displayFolder": "Marketing",
+            "description": "Unique exposed customers summed at campaign grain"
+          },
+          {
+            "name": "Campaign Clicks",
+            "expression": "SUM ( FactCampaignPerformance[Clicks] )",
+            "formatString": "#,0",
+            "displayFolder": "Marketing",
+            "description": "Campaign click interactions"
+          },
+          {
+            "name": "Campaign Conversions",
+            "expression": "SUM ( FactCampaignPerformance[Conversions] )",
+            "formatString": "#,0",
+            "displayFolder": "Marketing",
+            "description": "Campaign conversion interactions"
+          },
+          {
+            "name": "Campaign Conversion %",
+            "expression": "DIVIDE ( [Campaign Conversions], [Campaign Clicks] )",
+            "formatString": "0.0%",
+            "displayFolder": "Marketing",
+            "description": "Conversions divided by clicks"
+          },
+          {
+            "name": "Campaign CTR %",
+            "expression": "DIVIDE ( [Campaign Clicks], [Campaign Audience] )",
+            "formatString": "0.0%",
+            "displayFolder": "Marketing",
+            "description": "Clicks divided by audience"
+          },
+          {
+            "name": "Attributed Revenue",
+            "expression": "SUM ( FactCampaignPerformance[AttributedRevenueAfterRefund] )",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Marketing",
+            "description": "Directly attributed after-refund revenue"
+          },
+          {
+            "name": "Attributed Gross Profit",
+            "expression": "SUM ( FactCampaignPerformance[AttributedGrossProfit] )",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Marketing",
+            "description": "Directly attributed gross profit"
+          },
+          {
+            "name": "Campaign Discount Cost",
+            "expression": "SUM ( FactCampaignPerformance[DiscountCost] )",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Marketing",
+            "description": "Discount granted on attributed orders"
+          },
+          {
+            "name": "Attributed Revenue per Discount Dollar",
+            "expression": "DIVIDE ( [Attributed Revenue], [Campaign Discount Cost] )",
+            "formatString": "$0.00",
+            "displayFolder": "Marketing",
+            "description": "Attributed revenue divided by campaign discount cost"
+          },
+          {
+            "name": "Retention %",
+            "expression": "",
+            "formatString": "0.0%",
+            "displayFolder": "Retention",
+            "description": "Active cohort customers divided by original cohort size; returns only at matrix-cell grain"
+          },
+          {
+            "name": "VAR IsCell",
+            "expression": "HASONEVALUE ( FactCohortRetention[CohortMonth] )\n        && HASONEVALUE ( FactCohortRetention[MonthsSinceFirstOrder] )\nRETURN\n    IF (\n        IsCell,\n        DIVIDE (\n            SUM ( FactCohortRetention[ActiveCustomers] ),\n            MAX ( FactCohortRetention[CohortSize] )\n        )\n    )"
+          },
+          {
+            "name": "RFM Customers",
+            "expression": "DISTINCTCOUNT ( FactRfmSnapshot[CustomerId] )",
+            "formatString": "#,0",
+            "displayFolder": "Retention",
+            "description": "Distinct customers in selected RFM snapshot/segment"
+          },
+          {
+            "name": "RFM Monetary Value",
+            "expression": "SUM ( FactRfmSnapshot[MonetaryValue] )",
+            "formatString": "$#,0",
+            "displayFolder": "Retention",
+            "description": "After-refund historical value represented by an RFM segment"
+          },
+          {
+            "name": "Revenue Previous Month",
+            "expression": "CALCULATE ( [Revenue], DATEADD ( DimDate[FullDate], -1, MONTH ) )",
+            "formatString": "$#,0",
+            "displayFolder": "Time Intelligence",
+            "description": "Revenue shifted one month"
+          },
+          {
+            "name": "Revenue MoM Change",
+            "expression": "[Revenue] - [Revenue Previous Month]",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Time Intelligence",
+            "description": "Revenue less previous-month revenue"
+          },
+          {
+            "name": "Revenue MoM %",
+            "expression": "DIVIDE ( [Revenue MoM Change], [Revenue Previous Month] )",
+            "formatString": "0.0%;(0.0%);-",
+            "displayFolder": "Time Intelligence",
+            "description": "MoM change divided by previous-month revenue"
+          },
+          {
+            "name": "Revenue Previous Year",
+            "expression": "CALCULATE ( [Revenue], SAMEPERIODLASTYEAR ( DimDate[FullDate] ) )",
+            "formatString": "$#,0",
+            "displayFolder": "Time Intelligence",
+            "description": "Revenue shifted one year"
+          },
+          {
+            "name": "Revenue YoY Change",
+            "expression": "[Revenue] - [Revenue Previous Year]",
+            "formatString": "$#,0;($#,0);-",
+            "displayFolder": "Time Intelligence",
+            "description": "Revenue less prior-year revenue"
+          },
+          {
+            "name": "Revenue YoY %",
+            "expression": "DIVIDE ( [Revenue YoY Change], [Revenue Previous Year] )",
+            "formatString": "0.0%;(0.0%);-",
+            "displayFolder": "Time Intelligence",
+            "description": "YoY change divided by prior-year revenue"
+          },
+          {
+            "name": "Revenue MTD",
+            "expression": "TOTALMTD ( [Revenue], DimDate[FullDate] )",
+            "formatString": "$#,0",
+            "displayFolder": "Time Intelligence",
+            "description": "Revenue from month start to current date context"
+          },
+          {
+            "name": "Revenue YTD",
+            "expression": "TOTALYTD ( [Revenue], DimDate[FullDate] )",
+            "formatString": "$#,0",
+            "displayFolder": "Time Intelligence",
+            "description": "Revenue from year start to current date context"
+          },
+          {
+            "name": "Revenue After Refund YTD",
+            "expression": "TOTALYTD ( [Revenue After Refund], DimDate[FullDate] )",
+            "formatString": "$#,0",
+            "displayFolder": "Time Intelligence",
+            "description": "After-refund revenue from year start"
+          },
+          {
+            "name": "Rolling 3M Revenue",
+            "expression": "CALCULATE (\n    [Revenue],\n    DATESINPERIOD ( DimDate[FullDate], MAX ( DimDate[FullDate] ), -3, MONTH )\n)",
+            "formatString": "$#,0",
+            "displayFolder": "Time Intelligence",
+            "description": "Revenue over the trailing three-month window"
+          },
+          {
+            "name": "Rolling 12M Revenue",
+            "expression": "CALCULATE (\n    [Revenue],\n    DATESINPERIOD ( DimDate[FullDate], MAX ( DimDate[FullDate] ), -12, MONTH )\n)",
+            "formatString": "$#,0",
+            "displayFolder": "Time Intelligence",
+            "description": "Revenue over the trailing twelve-month window"
+          },
+          {
+            "name": "Product Revenue Rank",
+            "expression": "RANKX (\n    ALLSELECTED ( DimProduct[ProductId] ),\n    [Product Revenue],\n    ,\n    DESC,\n    DENSE\n)",
+            "formatString": "#,0",
+            "displayFolder": "Ranking",
+            "description": "Dense product revenue rank within current selection"
+          },
+          {
+            "name": "Customer Revenue Rank",
+            "expression": "RANKX (\n    ALLSELECTED ( DimCustomer[CustomerId] ),\n    CALCULATE ( [Revenue After Refund] ),\n    ,\n    DESC,\n    DENSE\n)",
+            "formatString": "#,0",
+            "displayFolder": "Ranking",
+            "description": "Dense customer revenue rank within current selection"
+          },
+          {
+            "name": "Cumulative Customer Revenue",
+            "expression": "",
+            "formatString": "$#,0",
+            "displayFolder": "Ranking",
+            "description": "Revenue accumulated through current customer rank"
+          },
+          {
+            "name": "VAR CurrentRank",
+            "expression": "[Customer Revenue Rank]\nRETURN\n    SUMX (\n        TOPN (\n            CurrentRank,\n            ALLSELECTED ( DimCustomer[CustomerId] ),\n            [Revenue After Refund], DESC,\n            DimCustomer[CustomerId], ASC\n        ),\n        [Revenue After Refund]\n    )"
+          },
+          {
+            "name": "Pareto Revenue %",
+            "expression": "DIVIDE (\n    [Cumulative Customer Revenue],\n    CALCULATE ( [Revenue After Refund], ALLSELECTED ( DimCustomer[CustomerId] ) )\n)",
+            "formatString": "0.0%",
+            "displayFolder": "Ranking",
+            "description": "Cumulative customer revenue divided by selected total"
+          },
+          {
+            "name": "Pareto 80% Customer Flag",
+            "expression": "",
+            "formatString": "0",
+            "displayFolder": "Ranking",
+            "description": "One when current rank remains inside the first 80% of revenue"
+          },
+          {
+            "name": "IF ( [Pareto Revenue %] <",
+            "expression": "0.80, 1, 0 )"
+          },
+          {
+            "name": "Cancelled Orders",
+            "expression": "CALCULATE (\n    DISTINCTCOUNT ( FactOrders[OrderId] ),\n    KEEPFILTERS ( FactOrders[StatusName] = \"Cancelled\" )\n)",
+            "formatString": "#,0",
+            "displayFolder": "Sales",
+            "description": "Distinct orders with Cancelled status"
+          },
+          {
+            "name": "All Orders",
+            "expression": "DISTINCTCOUNT ( FactOrders[OrderId] )",
+            "formatString": "#,0",
+            "displayFolder": "Sales",
+            "description": "Distinct orders including cancelled orders"
+          },
+          {
+            "name": "Cancellation Rate",
+            "expression": "DIVIDE ( [Cancelled Orders], [All Orders] )",
+            "formatString": "0.0%",
+            "displayFolder": "Sales",
+            "description": "Cancelled orders divided by all orders"
+          },
+          {
+            "name": "Late Deliveries",
+            "expression": "CALCULATE (\n    [Delivered Orders],\n    KEEPFILTERS ( FactOrders[IsOnTime] = 0 )\n)",
+            "formatString": "#,0",
+            "displayFolder": "Operations",
+            "description": "Delivered orders that missed the promised date"
+          },
+          {
+            "name": "Late Delivery %",
+            "expression": "DIVIDE ( [Late Deliveries], [Delivered Orders] )",
+            "formatString": "0.0%",
+            "displayFolder": "Operations",
+            "description": "Late deliveries divided by delivered orders"
+          },
+          {
+            "name": "Attributed Orders",
+            "expression": "SUM ( FactCampaignPerformance[AttributedOrders] )",
+            "formatString": "#,0",
+            "displayFolder": "Marketing",
+            "description": "Orders directly attributed to campaigns"
+          },
+          {
+            "name": "Attributed Average Order Value",
+            "expression": "DIVIDE ( [Attributed Revenue], [Attributed Orders] )",
+            "formatString": "$#,0.00",
+            "displayFolder": "Marketing",
+            "description": "Attributed after-refund revenue divided by attributed orders"
+          },
+          {
+            "name": "Campaign Profit per Conversion",
+            "expression": "DIVIDE ( [Attributed Gross Profit], [Campaign Conversions] )",
+            "formatString": "$#,0.00",
+            "displayFolder": "Marketing",
+            "description": "Attributed gross profit divided by campaign conversions"
+          },
+          {
+            "name": "Promotion Orders",
+            "expression": "CALCULATE (\n    [Orders],\n    KEEPFILTERS ( NOT ISBLANK ( FactOrders[PromotionId] ) )\n)",
+            "formatString": "#,0",
+            "displayFolder": "Marketing",
+            "description": "Valid orders carrying a promotion key"
+          },
+          {
+            "name": "Promotion Order Rate",
+            "expression": "DIVIDE ( [Promotion Orders], [Orders] )",
+            "formatString": "0.0%",
+            "displayFolder": "Marketing",
+            "description": "Promotion orders divided by valid orders"
+          },
+          {
+            "name": "One and Two Star Reviews",
+            "expression": "CALCULATE (\n    [Reviews],\n    KEEPFILTERS ( FactReviews[Rating] <= 2 )\n)",
+            "formatString": "#,0",
+            "displayFolder": "Reviews",
+            "description": "Reviews rated one or two stars"
+          },
+          {
+            "name": "Low Rating Review %",
+            "expression": "DIVIDE ( [One and Two Star Reviews], [Reviews] )",
+            "formatString": "0.0%",
+            "displayFolder": "Reviews",
+            "description": "One- and two-star reviews divided by all reviews"
+          },
+          {
+            "name": "Orders Previous Year",
+            "expression": "CALCULATE ( [Orders], SAMEPERIODLASTYEAR ( DimDate[FullDate] ) )",
+            "formatString": "#,0",
+            "displayFolder": "Time Intelligence",
+            "description": "Valid orders shifted one year"
+          },
+          {
+            "name": "Orders YoY %",
+            "expression": "DIVIDE ( [Orders] - [Orders Previous Year], [Orders Previous Year] )",
+            "formatString": "0.0%;(0.0%);-",
+            "displayFolder": "Time Intelligence",
+            "description": "Order change divided by prior-year orders"
+          },
+          {
+            "name": "Gross Profit Previous Year",
+            "expression": "CALCULATE ( [Gross Profit], SAMEPERIODLASTYEAR ( DimDate[FullDate] ) )",
+            "formatString": "$#,0",
+            "displayFolder": "Time Intelligence",
+            "description": "Gross profit shifted one year"
+          },
+          {
+            "name": "Gross Profit YoY %",
+            "expression": "DIVIDE ( [Gross Profit] - [Gross Profit Previous Year], [Gross Profit Previous Year] )",
+            "formatString": "0.0%;(0.0%);-",
+            "displayFolder": "Time Intelligence",
+            "description": "Gross-profit change divided by prior-year gross profit"
+          },
+          {
+            "name": "Active Customer Previous Year",
+            "expression": "CALCULATE ( [Active Customers], SAMEPERIODLASTYEAR ( DimDate[FullDate] ) )",
+            "formatString": "#,0",
+            "displayFolder": "Time Intelligence",
+            "description": "Active customers shifted one year"
+          },
+          {
+            "name": "Active Customer YoY %",
+            "expression": "DIVIDE ( [Active Customers] - [Active Customer Previous Year], [Active Customer Previous Year] )",
+            "formatString": "0.0%;(0.0%);-",
+            "displayFolder": "Time Intelligence",
+            "description": "Active-customer change divided by prior-year active customers"
+          },
+          {
+            "name": "RFM Customer Share %",
+            "expression": "DIVIDE (\n    [RFM Customers],\n    CALCULATE ( [RFM Customers], REMOVEFILTERS ( FactRfmSnapshot[RfmSegment] ) )\n)",
+            "formatString": "0.0%",
+            "displayFolder": "Retention",
+            "description": "RFM customers divided by all customers in the selected snapshot"
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "name": "Date_Orders",
+        "fromTable": "FactOrders",
+        "fromColumn": "OrderDateKey",
+        "toTable": "DimDate",
+        "toColumn": "DateKey",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Date_OrderLines",
+        "fromTable": "FactOrderLines",
+        "fromColumn": "OrderDateKey",
+        "toTable": "DimDate",
+        "toColumn": "DateKey",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Date_Returns",
+        "fromTable": "FactReturns",
+        "fromColumn": "ReturnDateKey",
+        "toTable": "DimDate",
+        "toColumn": "DateKey",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Date_Reviews",
+        "fromTable": "FactReviews",
+        "fromColumn": "ReviewDateKey",
+        "toTable": "DimDate",
+        "toColumn": "DateKey",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Date_CampaignStart",
+        "fromTable": "FactCampaignPerformance",
+        "fromColumn": "StartDateKey",
+        "toTable": "DimDate",
+        "toColumn": "DateKey",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Date_RfmSnapshot",
+        "fromTable": "FactRfmSnapshot",
+        "fromColumn": "SnapshotDateKey",
+        "toTable": "DimDate",
+        "toColumn": "DateKey",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Customer_Orders",
+        "fromTable": "FactOrders",
+        "fromColumn": "CustomerId",
+        "toTable": "DimCustomer",
+        "toColumn": "CustomerId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Customer_OrderLines",
+        "fromTable": "FactOrderLines",
+        "fromColumn": "CustomerId",
+        "toTable": "DimCustomer",
+        "toColumn": "CustomerId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Customer_Returns",
+        "fromTable": "FactReturns",
+        "fromColumn": "CustomerId",
+        "toTable": "DimCustomer",
+        "toColumn": "CustomerId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Customer_Reviews",
+        "fromTable": "FactReviews",
+        "fromColumn": "CustomerId",
+        "toTable": "DimCustomer",
+        "toColumn": "CustomerId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Customer_Rfm",
+        "fromTable": "FactRfmSnapshot",
+        "fromColumn": "CustomerId",
+        "toTable": "DimCustomer",
+        "toColumn": "CustomerId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Product_OrderLines",
+        "fromTable": "FactOrderLines",
+        "fromColumn": "ProductId",
+        "toTable": "DimProduct",
+        "toColumn": "ProductId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Product_Returns",
+        "fromTable": "FactReturns",
+        "fromColumn": "ProductId",
+        "toTable": "DimProduct",
+        "toColumn": "ProductId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Product_Reviews",
+        "fromTable": "FactReviews",
+        "fromColumn": "ProductId",
+        "toTable": "DimProduct",
+        "toColumn": "ProductId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Channel_Orders",
+        "fromTable": "FactOrders",
+        "fromColumn": "ChannelId",
+        "toTable": "DimChannel",
+        "toColumn": "ChannelId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Channel_OrderLines",
+        "fromTable": "FactOrderLines",
+        "fromColumn": "ChannelId",
+        "toTable": "DimChannel",
+        "toColumn": "ChannelId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Channel_Returns",
+        "fromTable": "FactReturns",
+        "fromColumn": "ChannelId",
+        "toTable": "DimChannel",
+        "toColumn": "ChannelId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Geography_Orders",
+        "fromTable": "FactOrders",
+        "fromColumn": "GeographyKey",
+        "toTable": "DimGeography",
+        "toColumn": "GeographyKey",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Geography_OrderLines",
+        "fromTable": "FactOrderLines",
+        "fromColumn": "GeographyKey",
+        "toTable": "DimGeography",
+        "toColumn": "GeographyKey",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Geography_Returns",
+        "fromTable": "FactReturns",
+        "fromColumn": "GeographyKey",
+        "toTable": "DimGeography",
+        "toColumn": "GeographyKey",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Promotion_Orders",
+        "fromTable": "FactOrders",
+        "fromColumn": "PromotionId",
+        "toTable": "DimPromotion",
+        "toColumn": "PromotionId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Promotion_OrderLines",
+        "fromTable": "FactOrderLines",
+        "fromColumn": "PromotionId",
+        "toTable": "DimPromotion",
+        "toColumn": "PromotionId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Promotion_Returns",
+        "fromTable": "FactReturns",
+        "fromColumn": "PromotionId",
+        "toTable": "DimPromotion",
+        "toColumn": "PromotionId",
+        "crossFilteringBehavior": "oneDirection"
+      },
+      {
+        "name": "Promotion_Campaigns",
+        "fromTable": "FactCampaignPerformance",
+        "fromColumn": "PromotionId",
+        "toTable": "DimPromotion",
+        "toColumn": "PromotionId",
+        "crossFilteringBehavior": "oneDirection"
+      }
+    ]
+  }
+}

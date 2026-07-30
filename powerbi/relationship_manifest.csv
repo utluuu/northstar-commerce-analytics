@@ -1,0 +1,25 @@
+RelationshipName,FromTable,FromColumn,ToTable,ToColumn,Cardinality,CrossFilterDirection,Active,Validation
+Date_Orders,DimDate,DateKey,FactOrders,OrderDateKey,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Date_OrderLines,DimDate,DateKey,FactOrderLines,OrderDateKey,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Date_Returns,DimDate,DateKey,FactReturns,ReturnDateKey,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Date_Reviews,DimDate,DateKey,FactReviews,ReviewDateKey,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Date_CampaignStart,DimDate,DateKey,FactCampaignPerformance,StartDateKey,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Date_RfmSnapshot,DimDate,DateKey,FactRfmSnapshot,SnapshotDateKey,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Customer_Orders,DimCustomer,CustomerId,FactOrders,CustomerId,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Customer_OrderLines,DimCustomer,CustomerId,FactOrderLines,CustomerId,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Customer_Returns,DimCustomer,CustomerId,FactReturns,CustomerId,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Customer_Reviews,DimCustomer,CustomerId,FactReviews,CustomerId,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Customer_Rfm,DimCustomer,CustomerId,FactRfmSnapshot,CustomerId,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Product_OrderLines,DimProduct,ProductId,FactOrderLines,ProductId,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Product_Returns,DimProduct,ProductId,FactReturns,ProductId,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Product_Reviews,DimProduct,ProductId,FactReviews,ProductId,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Channel_Orders,DimChannel,ChannelId,FactOrders,ChannelId,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Channel_OrderLines,DimChannel,ChannelId,FactOrderLines,ChannelId,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Channel_Returns,DimChannel,ChannelId,FactReturns,ChannelId,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Geography_Orders,DimGeography,GeographyKey,FactOrders,GeographyKey,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Geography_OrderLines,DimGeography,GeographyKey,FactOrderLines,GeographyKey,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Geography_Returns,DimGeography,GeographyKey,FactReturns,GeographyKey,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans
+Promotion_Orders,DimPromotion,PromotionId,FactOrders,PromotionId,One-to-many,Single,Yes,0 orphans; blank fact keys allowed
+Promotion_OrderLines,DimPromotion,PromotionId,FactOrderLines,PromotionId,One-to-many,Single,Yes,0 orphans; blank fact keys allowed
+Promotion_Returns,DimPromotion,PromotionId,FactReturns,PromotionId,One-to-many,Single,Yes,0 orphans; blank fact keys allowed
+Promotion_Campaigns,DimPromotion,PromotionId,FactCampaignPerformance,PromotionId,One-to-many,Single,Yes,0 dimension duplicates; 0 orphans

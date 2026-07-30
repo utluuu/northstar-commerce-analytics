@@ -1,0 +1,23 @@
+CsvFile,PowerBITable,Grain,ModelRole,Load,Visible
+dim_date.csv,DimDate,One row per calendar date,Conformed dimension,Yes,Yes
+dim_customers.csv,DimCustomer,One row per customer,Conformed dimension,Yes,Yes
+dim_products.csv,DimProduct,One row per product,Conformed dimension,Yes,Yes
+dim_channels.csv,DimChannel,One row per sales channel,Conformed dimension,Yes,Yes
+dim_geography.csv,DimGeography,One row per city-state-region combination,Conformed dimension,Yes,Yes
+dim_promotions.csv,DimPromotion,One row per promotion,Conformed dimension,Yes,Yes
+fact_orders.csv,FactOrders,One row per order,Atomic fact,Yes,Yes
+fact_order_lines.csv,FactOrderLines,One row per order item,Atomic fact,Yes,Yes
+fact_returns.csv,FactReturns,One row per returned order item,Atomic fact,Yes,Yes
+fact_reviews.csv,FactReviews,One row per review,Atomic fact,Yes,Yes
+campaign_performance.csv,FactCampaignPerformance,One row per promotion,Specialized fact,Yes,Yes
+cohort_retention.csv,FactCohortRetention,One row per cohort and elapsed month,Disconnected analytical fact,Yes,Yes
+rfm_segments.csv,FactRfmSnapshot,One row per customer at snapshot date,Snapshot fact,Yes,Yes
+acquisition_performance.csv,ValidationAcquisition,One row per acquisition source,Disconnected validation aggregate,Yes,No
+category_performance.csv,ValidationCategory,One row per parent category,Disconnected validation aggregate,Yes,No
+delivery_performance.csv,ValidationDelivery,One row per carrier and region,Disconnected validation aggregate,Yes,No
+discount_effectiveness.csv,ValidationDiscount,One row per month-channel-promotion group,Disconnected validation aggregate,Yes,No
+monthly_performance.csv,ValidationMonthly,One row per month,Disconnected validation aggregate,Yes,No
+pareto_curve.csv,ValidationPareto,One row per purchasing customer rank,Disconnected validation aggregate,Yes,No
+product_performance.csv,ValidationProduct,One row per product,Disconnected validation aggregate,Yes,No
+regional_channel_performance.csv,ValidationRegionalChannel,One row per region and channel,Disconnected validation aggregate,Yes,No
+review_return_relationship.csv,ValidationReviewReturn,One row per rating,Disconnected validation aggregate,Yes,No

@@ -1,0 +1,13 @@
+{
+  "source_directory": "data/generated",
+  "export_directory": "data/processed",
+  "figure_directory": "reports/figures",
+  "report_directory": "reports",
+  "log_file": "reports/eda_pipeline.log",
+  "chunk_size": 100000,
+  "figure_dpi": 180,
+  "top_products": 15,
+  "cohort_months": 12,
+  "rfm_snapshot_date": "2026-01-01",
+  "random_seed": 20260721
+}

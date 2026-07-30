@@ -1,0 +1,2 @@
+# Convenience entry point for repository-level installation.
+-r python/requirements.txt

@@ -1,0 +1,403 @@
+// Northstar Commerce governed measure layer.
+// Create an empty _Measures table and place these measures into the display folders
+// documented in MEASURE_DICTIONARY.md. Measures intentionally use atomic fact grains.
+
+// BASE ECONOMICS
+
+Revenue =
+SUM ( FactOrders[NetRevenue] )
+
+Revenue After Refund =
+SUM ( FactOrders[RevenueAfterRefund] )
+
+Gross Revenue =
+SUM ( FactOrders[GrossRevenue] )
+
+Discount Amount =
+SUM ( FactOrders[DiscountAmount] )
+
+Refund Amount =
+SUM ( FactOrders[RefundAmount] )
+
+Gross Profit =
+SUM ( FactOrders[GrossProfit] )
+
+Gross Profit After Refund =
+SUM ( FactOrders[GrossProfitAfterRefund] )
+
+Gross Margin % =
+DIVIDE ( [Gross Profit], [Revenue] )
+
+Gross Margin After Refund % =
+DIVIDE ( [Gross Profit After Refund], [Revenue After Refund] )
+
+Discount Rate =
+DIVIDE ( [Discount Amount], [Gross Revenue] )
+
+Refund Rate =
+DIVIDE ( [Refund Amount], [Revenue] )
+
+// SALES AND CUSTOMERS
+
+Orders =
+CALCULATE (
+    DISTINCTCOUNT ( FactOrders[OrderId] ),
+    KEEPFILTERS ( FactOrders[StatusName] <> "Cancelled" )
+)
+
+Units Sold =
+CALCULATE (
+    SUM ( FactOrderLines[Quantity] ),
+    KEEPFILTERS ( FactOrderLines[IsValidOrder] = 1 )
+)
+
+Active Customers =
+CALCULATE (
+    DISTINCTCOUNT ( FactOrders[CustomerId] ),
+    KEEPFILTERS ( FactOrders[StatusName] <> "Cancelled" )
+)
+
+New Customers =
+VAR PeriodStart = MIN ( DimDate[FullDate] )
+VAR PeriodEnd = MAX ( DimDate[FullDate] )
+RETURN
+    CALCULATE (
+        DISTINCTCOUNT ( DimCustomer[CustomerId] ),
+        REMOVEFILTERS ( DimDate ),
+        KEEPFILTERS ( DimCustomer[FirstOrderDate] >= PeriodStart ),
+        KEEPFILTERS ( DimCustomer[FirstOrderDate] <= PeriodEnd )
+    )
+
+Repeat Orders =
+CALCULATE (
+    DISTINCTCOUNT ( FactOrders[OrderId] ),
+    KEEPFILTERS ( FactOrders[StatusName] <> "Cancelled" ),
+    KEEPFILTERS ( FactOrders[IsRepeatPurchase] = 1 )
+)
+
+Repeat Customers =
+CALCULATE (
+    DISTINCTCOUNT ( FactOrders[CustomerId] ),
+    KEEPFILTERS ( FactOrders[StatusName] <> "Cancelled" ),
+    KEEPFILTERS ( FactOrders[IsRepeatPurchase] = 1 )
+)
+
+Repeat Order Rate =
+DIVIDE ( [Repeat Orders], [Orders] )
+
+Average Order Value =
+DIVIDE ( [Revenue], [Orders] )
+
+Revenue per Active Customer =
+DIVIDE ( [Revenue After Refund], [Active Customers] )
+
+Average Historical CLV =
+CALCULATE (
+    AVERAGE ( DimCustomer[LifetimeRevenueAfterRefund] ),
+    KEEPFILTERS ( DimCustomer[LifetimeOrders] > 0 )
+)
+
+Projected 12M Customer Value =
+CALCULATE (
+    AVERAGE ( DimCustomer[Projected12MonthRevenue] ),
+    KEEPFILTERS ( DimCustomer[LifetimeOrders] > 0 )
+)
+
+Customers at Risk =
+CALCULATE (
+    DISTINCTCOUNT ( DimCustomer[CustomerId] ),
+    KEEPFILTERS ( DimCustomer[LifecycleStatus] IN { "At Risk", "High Risk" } )
+)
+
+Churn Indicator % =
+DIVIDE (
+    [Customers at Risk],
+    CALCULATE (
+        DISTINCTCOUNT ( DimCustomer[CustomerId] ),
+        KEEPFILTERS ( DimCustomer[LifetimeOrders] > 0 )
+    )
+)
+
+Revenue at Risk =
+CALCULATE (
+    SUM ( DimCustomer[LifetimeRevenueAfterRefund] ),
+    KEEPFILTERS ( DimCustomer[LifecycleStatus] IN { "At Risk", "High Risk" } )
+)
+
+// PRODUCT, RETURNS, DELIVERY, AND REVIEWS
+
+Product Revenue =
+SUM ( FactOrderLines[NetRevenue] )
+
+Product Gross Profit =
+SUM ( FactOrderLines[GrossProfit] )
+
+Product Gross Margin % =
+DIVIDE ( [Product Gross Profit], [Product Revenue] )
+
+Returned Units =
+CALCULATE (
+    SUM ( FactOrderLines[ReturnedQuantity] ),
+    KEEPFILTERS ( FactOrderLines[IsValidOrder] = 1 )
+)
+
+Return Rate =
+DIVIDE ( [Returned Units], [Units Sold] )
+
+Return Event Units =
+CALCULATE (
+    SUM ( FactReturns[ReturnQuantity] ),
+    KEEPFILTERS ( FactReturns[ReturnStatus] <> "Rejected" )
+)
+
+Return Refund Amount =
+CALCULATE (
+    SUM ( FactReturns[RefundAmount] ),
+    KEEPFILTERS ( FactReturns[ReturnStatus] <> "Rejected" )
+)
+
+Product Refund Amount =
+CALCULATE (
+    SUM ( FactOrderLines[RefundAmount] ),
+    KEEPFILTERS ( FactOrderLines[IsValidOrder] = 1 )
+)
+
+Delivered Orders =
+CALCULATE ( [Orders], KEEPFILTERS ( NOT ISBLANK ( FactOrders[DeliveredDate] ) ) )
+
+On-Time Deliveries =
+CALCULATE ( [Orders], KEEPFILTERS ( FactOrders[IsOnTime] = 1 ) )
+
+On-Time Delivery % =
+DIVIDE ( [On-Time Deliveries], [Delivered Orders] )
+
+Average Delivery Days =
+CALCULATE (
+    AVERAGE ( FactOrders[DeliveryDays] ),
+    KEEPFILTERS ( NOT ISBLANK ( FactOrders[DeliveredDate] ) )
+)
+
+Reviews =
+COUNTROWS ( FactReviews )
+
+Average Rating =
+AVERAGE ( FactReviews[Rating] )
+
+Verified Review % =
+DIVIDE (
+    CALCULATE ( [Reviews], KEEPFILTERS ( FactReviews[IsVerifiedPurchase] = 1 ) ),
+    [Reviews]
+)
+
+Reviewed Item Return Rate =
+DIVIDE (
+    CALCULATE ( [Reviews], KEEPFILTERS ( FactReviews[WasReturned] = 1 ) ),
+    [Reviews]
+)
+
+// CAMPAIGNS
+
+Campaign Audience =
+SUM ( FactCampaignPerformance[Audience] )
+
+Campaign Clicks =
+SUM ( FactCampaignPerformance[Clicks] )
+
+Campaign Conversions =
+SUM ( FactCampaignPerformance[Conversions] )
+
+Campaign Conversion % =
+DIVIDE ( [Campaign Conversions], [Campaign Clicks] )
+
+Campaign CTR % =
+DIVIDE ( [Campaign Clicks], [Campaign Audience] )
+
+Attributed Revenue =
+SUM ( FactCampaignPerformance[AttributedRevenueAfterRefund] )
+
+Attributed Gross Profit =
+SUM ( FactCampaignPerformance[AttributedGrossProfit] )
+
+Campaign Discount Cost =
+SUM ( FactCampaignPerformance[DiscountCost] )
+
+Attributed Revenue per Discount Dollar =
+DIVIDE ( [Attributed Revenue], [Campaign Discount Cost] )
+
+// RETENTION AND RFM
+
+Retention % =
+VAR IsCell =
+    HASONEVALUE ( FactCohortRetention[CohortMonth] )
+        && HASONEVALUE ( FactCohortRetention[MonthsSinceFirstOrder] )
+RETURN
+    IF (
+        IsCell,
+        DIVIDE (
+            SUM ( FactCohortRetention[ActiveCustomers] ),
+            MAX ( FactCohortRetention[CohortSize] )
+        )
+    )
+
+RFM Customers =
+DISTINCTCOUNT ( FactRfmSnapshot[CustomerId] )
+
+RFM Monetary Value =
+SUM ( FactRfmSnapshot[MonetaryValue] )
+
+// TIME INTELLIGENCE
+
+Revenue Previous Month =
+CALCULATE ( [Revenue], DATEADD ( DimDate[FullDate], -1, MONTH ) )
+
+Revenue MoM Change =
+[Revenue] - [Revenue Previous Month]
+
+Revenue MoM % =
+DIVIDE ( [Revenue MoM Change], [Revenue Previous Month] )
+
+Revenue Previous Year =
+CALCULATE ( [Revenue], SAMEPERIODLASTYEAR ( DimDate[FullDate] ) )
+
+Revenue YoY Change =
+[Revenue] - [Revenue Previous Year]
+
+Revenue YoY % =
+DIVIDE ( [Revenue YoY Change], [Revenue Previous Year] )
+
+Revenue MTD =
+TOTALMTD ( [Revenue], DimDate[FullDate] )
+
+Revenue YTD =
+TOTALYTD ( [Revenue], DimDate[FullDate] )
+
+Revenue After Refund YTD =
+TOTALYTD ( [Revenue After Refund], DimDate[FullDate] )
+
+Rolling 3M Revenue =
+CALCULATE (
+    [Revenue],
+    DATESINPERIOD ( DimDate[FullDate], MAX ( DimDate[FullDate] ), -3, MONTH )
+)
+
+Rolling 12M Revenue =
+CALCULATE (
+    [Revenue],
+    DATESINPERIOD ( DimDate[FullDate], MAX ( DimDate[FullDate] ), -12, MONTH )
+)
+
+// RANKING AND PARETO
+
+Product Revenue Rank =
+RANKX (
+    ALLSELECTED ( DimProduct[ProductId] ),
+    [Product Revenue],
+    ,
+    DESC,
+    DENSE
+)
+
+Customer Revenue Rank =
+RANKX (
+    ALLSELECTED ( DimCustomer[CustomerId] ),
+    CALCULATE ( [Revenue After Refund] ),
+    ,
+    DESC,
+    DENSE
+)
+
+Cumulative Customer Revenue =
+VAR CurrentRank = [Customer Revenue Rank]
+RETURN
+    SUMX (
+        TOPN (
+            CurrentRank,
+            ALLSELECTED ( DimCustomer[CustomerId] ),
+            [Revenue After Refund], DESC,
+            DimCustomer[CustomerId], ASC
+        ),
+        [Revenue After Refund]
+    )
+
+Pareto Revenue % =
+DIVIDE (
+    [Cumulative Customer Revenue],
+    CALCULATE ( [Revenue After Refund], ALLSELECTED ( DimCustomer[CustomerId] ) )
+)
+
+Pareto 80% Customer Flag =
+IF ( [Pareto Revenue %] <= 0.80, 1, 0 )
+
+// EXECUTIVE AND OPERATIONAL SUPPORT
+
+Cancelled Orders =
+CALCULATE (
+    DISTINCTCOUNT ( FactOrders[OrderId] ),
+    KEEPFILTERS ( FactOrders[StatusName] = "Cancelled" )
+)
+
+All Orders =
+DISTINCTCOUNT ( FactOrders[OrderId] )
+
+Cancellation Rate =
+DIVIDE ( [Cancelled Orders], [All Orders] )
+
+Late Deliveries =
+CALCULATE (
+    [Delivered Orders],
+    KEEPFILTERS ( FactOrders[IsOnTime] = 0 )
+)
+
+Late Delivery % =
+DIVIDE ( [Late Deliveries], [Delivered Orders] )
+
+Attributed Orders =
+SUM ( FactCampaignPerformance[AttributedOrders] )
+
+Attributed Average Order Value =
+DIVIDE ( [Attributed Revenue], [Attributed Orders] )
+
+Campaign Profit per Conversion =
+DIVIDE ( [Attributed Gross Profit], [Campaign Conversions] )
+
+Promotion Orders =
+CALCULATE (
+    [Orders],
+    KEEPFILTERS ( NOT ISBLANK ( FactOrders[PromotionId] ) )
+)
+
+Promotion Order Rate =
+DIVIDE ( [Promotion Orders], [Orders] )
+
+One and Two Star Reviews =
+CALCULATE (
+    [Reviews],
+    KEEPFILTERS ( FactReviews[Rating] <= 2 )
+)
+
+Low Rating Review % =
+DIVIDE ( [One and Two Star Reviews], [Reviews] )
+
+Orders Previous Year =
+CALCULATE ( [Orders], SAMEPERIODLASTYEAR ( DimDate[FullDate] ) )
+
+Orders YoY % =
+DIVIDE ( [Orders] - [Orders Previous Year], [Orders Previous Year] )
+
+Gross Profit Previous Year =
+CALCULATE ( [Gross Profit], SAMEPERIODLASTYEAR ( DimDate[FullDate] ) )
+
+Gross Profit YoY % =
+DIVIDE ( [Gross Profit] - [Gross Profit Previous Year], [Gross Profit Previous Year] )
+
+Active Customer Previous Year =
+CALCULATE ( [Active Customers], SAMEPERIODLASTYEAR ( DimDate[FullDate] ) )
+
+Active Customer YoY % =
+DIVIDE ( [Active Customers] - [Active Customer Previous Year], [Active Customer Previous Year] )
+
+RFM Customer Share % =
+DIVIDE (
+    [RFM Customers],
+    CALCULATE ( [RFM Customers], REMOVEFILTERS ( FactRfmSnapshot[RfmSegment] ) )
+)

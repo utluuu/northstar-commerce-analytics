@@ -1,0 +1,35 @@
+{
+  "name": "Northstar Executive",
+  "dataColors": ["#2563EB", "#0F766E", "#D97706", "#7C3AED", "#DC2626", "#64748B", "#0891B2", "#65A30D"],
+  "background": "#F8FAFC",
+  "foreground": "#0F172A",
+  "tableAccent": "#2563EB",
+  "good": "#15803D",
+  "neutral": "#D97706",
+  "bad": "#B91C1C",
+  "maximum": "#2563EB",
+  "center": "#E2E8F0",
+  "minimum": "#B91C1C",
+  "visualStyles": {
+    "*": {
+      "*": {
+        "title": [{"show": true, "fontFace": "Segoe UI Semibold", "fontSize": 12, "fontColor": {"solid": {"color": "#0F172A"}}, "alignment": "left"}],
+        "background": [{"show": true, "color": {"solid": {"color": "#FFFFFF"}}, "transparency": 0}],
+        "border": [{"show": false}],
+        "visualHeader": [{"show": true}],
+        "filterCard": [{"$id": "Applied", "backgroundColor": {"solid": {"color": "#EFF6FF"}}}]
+      }
+    },
+    "page": {
+      "*": {
+        "background": [{"color": {"solid": {"color": "#F8FAFC"}}, "transparency": 0}]
+      }
+    }
+  },
+  "textClasses": {
+    "title": {"fontFace": "Segoe UI Semibold", "fontSize": 14, "color": "#0F172A"},
+    "header": {"fontFace": "Segoe UI Semibold", "fontSize": 12, "color": "#0F172A"},
+    "label": {"fontFace": "Segoe UI", "fontSize": 10, "color": "#334155"},
+    "callout": {"fontFace": "Segoe UI Semibold", "fontSize": 28, "color": "#0F172A"}
+  }
+}
